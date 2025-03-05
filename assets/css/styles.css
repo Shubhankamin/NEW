@@ -1,0 +1,245 @@
+.fullscreen-container {
+  height: 100vh;
+  width: 100vw;
+}
+.form-Container {
+  max-height: 360px;
+  width: 35%;
+  position: absolute;
+  left: 35%;
+  top: 25%;
+  border-radius: 10px;
+  box-shadow: 20px 20px 60px #e6e3e3, -20px -20px 60px #ffffff;
+}
+
+.form-Container-large {
+  height: 360px;
+  width: 18%;
+  position: absolute;
+  left: 45%;
+  top: 25%;
+  border-radius: 10px;
+  box-shadow: 20px 20px 60px #e6e3e3, -20px -20px 60px #ffffff;
+}
+
+.logo-container {
+  height: 20%;
+  width: 23%;
+  position: absolute;
+  top: 13%;
+  left: 40%;
+}
+.logo-container-large {
+  height: 20%;
+  width: 18%;
+  position: absolute;
+  top: 13%;
+  left: 45%;
+}
+
+/* Table styles */
+.buySell-button {
+  width: 35px;
+  height: 20px;
+
+  border: 1px solid #87441c;
+  border-radius: 5px;
+}
+.container {
+  width: 6%; /* Adjust based on your layout */
+  padding: 1px; /* Provides some space inside the div */
+  border: 1px solid #03ff03; /* Just for visual reference */
+  overflow: hidden; /* Prevents content from overflowing */
+  border-radius: 5px;
+}
+
+.content {
+  white-space: nowrap; /* Prevents text from wrapping to a new line */
+  overflow: hidden; /* Hides overflow content */
+  text-overflow: ellipsis; /* Adds an ellipsis to indicate clipped text */
+}
+.buySell-button-edit {
+  width: 35px;
+  height: 3vh;
+  border: 1px solid #87441c;
+  border-radius: 5px;
+}
+
+.buySell-button-green {
+  width: 35px;
+  height: 3vh;
+  padding-bottom: 18px;
+  border: 1px solid #287d3a;
+  border-radius: 5px;
+}
+
+.iti__selected-country-primary {
+  padding-top: 10px !important;
+}
+
+.v-table.v-table--hover > .v-table__wrapper > table > tbody > tr > td {
+  position: relative;
+  height: 30px !important;
+}
+.v-data-table-header__content {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+.v-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.v-table tbody tr:nth-child(even) {
+  background-color: #ffebc4a2;
+}
+
+.v-table .v-table__wrapper > table > tbody > tr:not(:last-child) > td,
+.v-table .v-table__wrapper > table > tbody > tr:not(:last-child) > th {
+  border-bottom: #ff0000;
+}
+
+.delete {
+  background-color: #000;
+  color: #fff;
+}
+.cancel {
+  background-color: #fff;
+  color: #000;
+}
+
+#inspire
+  > div
+  > main
+  > div
+  > div.d-none.d-md-block
+  > div
+  > div
+  > div
+  > div:nth-child(3)
+  > div
+  > div.v-table__wrapper
+  > table
+  > tbody
+  > tr
+  > td {
+  border-bottom: 0px solid #ffffff;
+}
+::placeholder {
+  font-size: 14px;
+  opacity: 1; /* Firefox */
+}
+
+.date-Picker {
+  position: absolute;
+  right: 15%;
+  cursor: pointer;
+  z-index: 10;
+}
+.label-font {
+  font-weight: bold;
+  font-family: open-bold;
+}
+
+.category-selector {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+.category-container {
+  height: 50vh;
+  overflow-y: auto;
+}
+
+.file-uploader {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.file-item:hover {
+  transform: scale(1.05);
+}
+
+.file-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.upload-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.expand {
+  width: 86%;
+}
+.date-Picker {
+  position: absolute;
+  right: 15%;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.box {
+  position: relative;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+}
+
+.overlay-text {
+  position: absolute;
+  top: -15px;
+  left: 15%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: 600;
+  background-color: #fff;
+}
+
+.otp-input {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #808080;
+}
+
+.datepicker-container {
+  position: relative;
+  display: inline-block;
+  z-index: 100;
+}
+
+.icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.clear-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ff4d4f;
+  color: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
+}
