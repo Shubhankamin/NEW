@@ -460,7 +460,7 @@
       <template #item.isEnabled="{ item }">
         <v-switch
           class="my-auto"
-          color="#D1A651"
+          color="black"
           v-model="item.isEnabled"
           @click="$emit('enableDisable', item)"
         ></v-switch>

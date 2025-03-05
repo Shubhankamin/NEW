@@ -5,16 +5,25 @@
     >
       <div class="d-flex ga-2">
         <v-icon class="my-auto" @click="goBack">mdi-arrow-left</v-icon>
-        <h3 class="paragraph-h1 my-auto">User Name</h3>
+        <h3 class="paragraph-h1 my-auto">{{ customerData.name }}</h3>
       </div>
       <div class="d-flex ga-2">
-        <v-btn variant="outlined" color="black">Cancel</v-btn>
+        <v-btn variant="outlined" @click="clearAll" color="black">Cancel</v-btn>
         <v-btn
+          v-if="type === 'edit'"
           elevation="0"
           variant="text"
           class="bg-black"
           @click="saveCustomerData"
           >Save</v-btn
+        >
+        <v-btn
+          v-if="type === 'add'"
+          elevation="0"
+          variant="text"
+          class="bg-black"
+          @click="saveCustomerData"
+          >ADD</v-btn
         >
       </div>
     </div>
@@ -62,12 +71,10 @@
         </v-col>
         <v-col cols="4">
           <label class="mx-2 label-font">DOB</label>
-          <v-text-field
-            density="compact"
-            placeholder="Select date"
-            variant="outlined"
+          <VueDatePicker
             v-model="customerData.dob"
-          />
+            :enable-time-picker="false"
+          ></VueDatePicker>
         </v-col>
       </v-row>
       <v-row>
@@ -89,11 +96,13 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 const router = useRouter();
 const route = useRoute();
 const id = route.query.id;
-const type = route.query.type; // Check if it's "add" mode
+const type = route.query.type;
+console.log(type, "my type"); // Check if it's "add" mode
 const { $supabase } = useNuxtApp();
 
 const originalData = ref({});
@@ -174,7 +183,6 @@ const saveCustomerData = async () => {
 
       console.log("✅ New customer added successfully!");
       alert("New customer added successfully!");
-      router.push("/customers"); // Redirect after adding
     } else {
       // Update existing customer
       const { error } = await $supabase
@@ -201,6 +209,15 @@ const saveCustomerData = async () => {
   } catch (err) {
     console.error("❌ Save error:", err);
   }
+};
+
+const clearAll = () => {
+  customerData.value = {
+    name: "",
+    phone: "",
+    email: "",
+    dob: "",
+  };
 };
 
 const capitalizeFirstLetter = (str) => {

@@ -91,7 +91,7 @@
 }
 
 .v-table tbody tr:nth-child(even) {
-  background-color: #ffebc4a2;
+  background-color: #9999983f;
 }
 
 .v-table .v-table__wrapper > table > tbody > tr:not(:last-child) > td,
