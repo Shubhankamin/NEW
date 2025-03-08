@@ -38,6 +38,7 @@
               "
               :disabled="!isEmailValid || !isPasswordValid"
               class="rounded"
+              :loading="isLoading"
               @click="handleLogin"
             >
               <h5>LOGIN</h5>
@@ -77,7 +78,7 @@
 definePageMeta({
   layout: "custom",
 });
-
+const isLoading = ref(false);
 const email = ref("");
 const password = ref("");
 const visible = ref(false);
@@ -100,25 +101,34 @@ watch(password, (val) => {
 const router = useRouter();
 
 const handleLogin = async () => {
-  const { session, error } = await login(email.value, password.value);
-  if (error) {
-    console.error("Login failed:", error);
-    statusMessage.value = error;
-    return;
-  }
+  isLoading.value = true; 
+  statusMessage.value = "";
 
-  console.log("Login session:", session);
+  try {
+    const { session, error } = await login(email.value, password.value);
 
-  if (session && session.user) {
-    const user = useCookie("user", { path: "/", maxAge: 60 * 60 * 24 * 7 }); // Store for 7 days
-    user.value = JSON.stringify({
-      id: session.user.id,
-      email: session.user.email,
-      authenticated: true,
-    });
+    if (error) {
+      throw new Error(error);
+    }
 
-    console.log("User cookie set:", user.value);
-    router.push("/dashboard");
+    console.log("Login session:", session);
+
+    if (session && session.user) {
+      const user = useCookie("user", { path: "/", maxAge: 60 * 60 * 24 * 7 }); 
+      user.value = JSON.stringify({
+        id: session.user.id,
+        email: session.user.email,
+        authenticated: true,
+      });
+
+      console.log("User cookie set:", user.value);
+      router.push("/dashboard");
+    }
+  } catch (err) {
+    console.error("Login failed:", err.message);
+    statusMessage.value = err.message;
+  } finally {
+    isLoading.value = false; 
   }
 };
 </script>

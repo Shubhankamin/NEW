@@ -29,22 +29,20 @@ const props = defineProps<{
   item: any;
   type: string;
 }>();
+
 const emit = defineEmits<{
   (event: "enableDisable", item: any): void;
   (event: "cancel"): void;
 }>();
 
 const dialogOpen = ref(true);
-const editedItem = ref([]);
-editedItem.value = props.item;
+const editedItem = ref({ ...props.item }); // Fix reference issue
 
 function enableDisableData() {
   emit("enableDisable", editedItem.value);
-  dialogOpen.value = false;
 }
 
 function cancel() {
   emit("cancel");
-  dialogOpen.value = false;
 }
 </script>

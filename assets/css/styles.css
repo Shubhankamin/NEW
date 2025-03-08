@@ -91,7 +91,7 @@
 }
 
 .v-table tbody tr:nth-child(even) {
-  background-color: #ffebc4a2;
+  background-color: #9999983f;
 }
 
 .v-table .v-table__wrapper > table > tbody > tr:not(:last-child) > td,
@@ -242,4 +242,7 @@
   font-size: 12px;
   cursor: pointer;
   line-height: 1;
+}
+.sub-category-chip {
+  border-radius: 8px!important;
 }

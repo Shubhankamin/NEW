@@ -5,16 +5,27 @@
     >
       <div class="d-flex ga-2">
         <v-icon class="my-auto" @click="goBack">mdi-arrow-left</v-icon>
-        <h3 class="paragraph-h1 my-auto">User Name</h3>
+        <h3 class="paragraph-h1 my-auto">{{ customerData.name }}</h3>
       </div>
       <div class="d-flex ga-2">
-        <v-btn variant="outlined" color="black">Cancel</v-btn>
+        <v-btn variant="outlined" @click="clearAll" color="black">Cancel</v-btn>
         <v-btn
+          v-if="type === 'edit'"
           elevation="0"
           variant="text"
           class="bg-black"
           @click="saveCustomerData"
+          :loading="isLoading"
           >Save</v-btn
+        >
+        <v-btn
+          v-if="type === 'add'"
+          elevation="0"
+          variant="text"
+          class="bg-black"
+          @click="saveCustomerData"
+          :loading="isLoading"
+          >ADD</v-btn
         >
       </div>
     </div>
@@ -62,12 +73,10 @@
         </v-col>
         <v-col cols="4">
           <label class="mx-2 label-font">DOB</label>
-          <v-text-field
-            density="compact"
-            placeholder="Select date"
-            variant="outlined"
+          <VueDatePicker
             v-model="customerData.dob"
-          />
+            :enable-time-picker="false"
+          ></VueDatePicker>
         </v-col>
       </v-row>
       <v-row>
@@ -89,13 +98,19 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-
+import VueDatePicker from "@vuepic/vue-datepicker";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
+import "@vuepic/vue-datepicker/dist/main.css";
+import SuccessToast from "~/components/SuccessToast.vue";
+import ErrorToast from "~/components/ErrorToast.vue";
 const router = useRouter();
 const route = useRoute();
 const id = route.query.id;
-const type = route.query.type; // Check if it's "add" mode
+const type = route.query.type;
+console.log(type, "my type"); // Check if it's "add" mode
 const { $supabase } = useNuxtApp();
-
+const isLoading = ref(false);
 const originalData = ref({});
 const customerData = ref({
   name: "",
@@ -151,12 +166,22 @@ const getCustomerData = async () => {
 
 // Function to insert or update customer data
 const saveCustomerData = async () => {
+  isLoading.value = true;
+
   if (!isChanged.value) {
-    alert("No changes detected!");
+    toast.error({
+      render: () =>
+        h(ErrorToast, { heading: "Error", message: "No changes detected!" }),
+      autoClose: 3000,
+      position: "top-right",
+    });
+    isLoading.value = false;
     return;
   }
 
   try {
+    let successMessage = "";
+
     if (type === "add") {
       // Insert new customer
       const { error } = await $supabase.from("customers").insert({
@@ -168,13 +193,10 @@ const saveCustomerData = async () => {
       });
 
       if (error) {
-        console.error("❌ Error adding customer:", error);
-        return;
+        throw new Error("Failed to add customer.");
       }
 
-      console.log("✅ New customer added successfully!");
-      alert("New customer added successfully!");
-      router.push("/customers"); // Redirect after adding
+      successMessage = "New customer added successfully!";
     } else {
       // Update existing customer
       const { error } = await $supabase
@@ -189,18 +211,42 @@ const saveCustomerData = async () => {
         .eq("id", id);
 
       if (error) {
-        console.error("❌ Error updating customer data:", error);
-        return;
+        throw new Error("Failed to update customer data.");
       }
 
-      console.log("✅ Customer data updated successfully!");
-      alert("Customer data updated successfully!");
-
+      successMessage = "Customer data updated successfully!";
       originalData.value = { ...customerData.value };
     }
+
+    console.log(`✅ ${successMessage}`);
+
+    // Show success toast
+    toast.success({
+      render: () =>
+        h(SuccessToast, { heading: "Success", message: successMessage }),
+      autoClose: 3000,
+      position: "top-right",
+    });
   } catch (err) {
     console.error("❌ Save error:", err);
+
+    // Show error toast
+    toast.error({
+      render: () => h(ErrorToast, { heading: "Error", message: err.message }),
+      autoClose: 8000,
+      position: "top-right",
+    });
+  } finally {
+    isLoading.value = false;
   }
+};
+const clearAll = () => {
+  customerData.value = {
+    name: "",
+    phone: "",
+    email: "",
+    dob: "",
+  };
 };
 
 const capitalizeFirstLetter = (str) => {

@@ -12,7 +12,8 @@
       @edit="openEditDialog"
       @enableDisable="openEnableDisableDialog"
     />
-    <EnableDisableDialog
+
+    <EnableDisable
       v-if="enableDisableDialog"
       :item="selectedItem"
       type="Customer"
@@ -47,7 +48,8 @@ const getLoadData = async () => {
   try {
     const { data, error, count } = await $supabase
       .from("customers")
-      .select("*", { count: "exact" });
+      .select("*", { count: "exact" })
+      .order("updated_at", { ascending: false }); // Fetch latest first
 
     if (error) {
       console.error("❌ Error fetching customers:", error);
@@ -100,6 +102,31 @@ function openEditDialog(edit: boolean, item: Customers) {
   }
 }
 
+const saveItemEnableDisable = async (item: Customers) => {
+  try {
+    const { error } = await $supabase
+      .from("customers")
+      .update({ isEnabled: !item.isEnabled })
+      .eq("id", item.id);
+
+    if (error) {
+      console.error("❌ Error updating customer:", error);
+      return;
+    }
+
+    console.log("✅ Customer enable/disable updated:", item);
+    alert(`Customer ${item.isEnabled ? "enabled" : "disabled"} successfully`);
+
+    enableDisableDialog.value = false; // Close dialog
+    getLoadData(); // Refresh data
+  } catch (err) {
+    console.error("❌ Update error:", err);
+  }
+};
+const closeEditDialog = () => {
+  enableDisableDialog.value = false;
+  deleteDialog.value = false;
+};
 const headers = computed(() => [
   { title: "Name", value: "name", key: "name", width: "auto" },
   { title: "Email", value: "email", key: "email", width: "auto" },
