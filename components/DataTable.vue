@@ -72,27 +72,26 @@
         </p>
       </template>
 
-      <template #item.subCategoryDetails.name="{ item }">
-        <div class="wrapper-class">
-          <template
-            v-if="
-              item?.subCategoryDetails && item.subCategoryDetails.length > 0
-            "
-          >
-            <p
-              v-for="(subCategory, index) in item.subCategoryDetails.slice(
-                0,
-                3
-              )"
+      <template #item.subcategory="{ item }">
+        <div class="wrapper-class my-2 d-flex align-center ga-3">
+          <template v-if="item?.subcategory && item.subcategory.length > 0">
+            <!-- Display first 3 subcategories as chips -->
+            <v-chip
+              v-for="(subCategory, index) in item.subcategory.slice(0, 3)"
               :key="index"
-              class="sub-category"
+              class="sub-category-chip bg-grey"
+              color="primary"
+              variant="outlined"
             >
-              {{ subCategory.name ? subCategory.name : "N/A" }}
-            </p>
-            <p v-if="item.subCategoryDetails.length > 3" class="sub-category">
-              +{{ item.subCategoryDetails.length - 3 }}
+              {{ subCategory }}
+            </v-chip>
+
+            <!-- Show +X if there are more than 3 subcategories -->
+            <p v-if="item.subcategory.length > 3">
+              +{{ item.subcategory.length - 3 }}
             </p>
           </template>
+
           <template v-else>
             <p class="sub-category">N/A</p>
           </template>

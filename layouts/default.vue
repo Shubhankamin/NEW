@@ -405,6 +405,7 @@
               class="open-light-h6 buttons text-none"
               variant="text"
               prepend-icon="mdi-power"
+              :loading="isLoading"
               >Logout</v-btn
             >
           </div>
@@ -551,6 +552,7 @@ const showSubmenuSocial = ref(false);
 const showSubmenuOthers = ref(false);
 const showSubMenuOrders = ref(false);
 const showSubMenuGiftCard = ref(false);
+const isLoading = ref(false);
 // const showSubMenuOthers = ref(false);
 
 //button active state
@@ -662,7 +664,7 @@ const logout = () => {
 };
 
 const logoutConfirm = async () => {
-  loading.value = true;
+  isLoading.value = true;
 
   try {
     const { error } = await $supabase.auth.signOut();
@@ -700,7 +702,7 @@ const logoutConfirm = async () => {
   } catch (error) {
     console.error("Logout failed:", error);
   } finally {
-    loading.value = false;
+    isLoading.value = false;
   }
 };
 

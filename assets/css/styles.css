@@ -243,3 +243,6 @@
   cursor: pointer;
   line-height: 1;
 }
+.sub-category-chip {
+  border-radius: 8px!important;
+}
