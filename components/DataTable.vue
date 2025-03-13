@@ -98,6 +98,8 @@
         </div>
       </template>
 
+      
+
       <template #item.orderNo="{ item }">
         <p
           @click="$emit('edit', true, item)"
@@ -194,7 +196,7 @@
         <p
           v-if="!item.discountCode"
           @click="$emit('edit', true, item)"
-          class="text-blue-accent-4 blue-text"
+          class="text-blue-accent-4 blue-text cursor-pointer"
         >
           {{ item.title ? item.title : "N/A" }}
         </p>
@@ -432,8 +434,8 @@
         </p>
       </template>
 
-      <template #item.createdAt="{ item }">
-        <p>{{ formatDate(item?.createdAt) }}</p>
+      <template #item.created_at="{ item }">
+        <p>{{ formatDate(item?.created_at) }}</p>
       </template>
 
       <template #item.associateName="{ item }">
