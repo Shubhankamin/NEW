@@ -67,7 +67,7 @@
           </ClientOnly>
         </v-col>
 
-        <!-- ✅ Image Upload Field -->
+        <!-- ✅ Select Image Button -->
         <v-col cols="10" class="mt-16">
           <p class="mx-2 label-font">
             Upload Image<span class="text-red">*</span>
@@ -79,7 +79,7 @@
               <input
                 type="file"
                 ref="fileInput"
-                @change="handleImageUpload"
+                @change="handleImageSelection"
                 accept="image/*"
                 hidden
               />
@@ -89,15 +89,6 @@
             <div v-if="selectedItem.image" class="image-preview">
               <img :src="selectedItem.image" alt="Preview" />
             </div>
-
-            <div class="d-flex justify-center mt-4">
-              <v-btn
-                @click="uploadImage"
-                :loading="loadingImage"
-                color="primary"
-                >Upload</v-btn
-              >
-            </div>
           </div>
         </v-col>
       </v-row>
@@ -106,11 +97,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import { ref, onMounted, computed, defineAsyncComponent } from "vue";
+
+const QuillEditor = defineAsyncComponent(() =>
+  import("@vueup/vue-quill").then((module) => module.QuillEditor)
+);
 
 const router = useRouter();
 const route = useRoute();
@@ -122,15 +116,14 @@ const type = route.query.type as string;
 const isEditMode = computed(() => type === "edit");
 
 const loadingButton = ref(false);
-const loadingImage = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
-const file = ref<File | null>(null);
+const file = ref<File | null>(null); // ✅ Store selected file
 
 const selectedItem = ref({
   title: "",
   date: new Date().toISOString().slice(0, 19),
   description: "",
-  image: "", // Store image URL
+  image: "", // ✅ Store image URL
 });
 
 const goBack = () => {
@@ -141,7 +134,7 @@ const triggerFileInput = () => {
   fileInput.value?.click();
 };
 
-// ✅ Fetch Blog Data from Supabase
+// ✅ Fetch Blog Data
 const fetchBlogById = async () => {
   if (!isEditMode.value || !id) return;
 
@@ -160,9 +153,7 @@ const fetchBlogById = async () => {
     if (data) {
       selectedItem.value = {
         title: data.title || "",
-        date: data.date
-          ? new Date(data.date).toISOString().slice(0, 19)
-          : new Date().toISOString().slice(0, 19),
+        date: data.created_at ? new Date(data.created_at).toISOString() : "",
         description: data.description || "",
         image: data.image || "",
       };
@@ -172,21 +163,21 @@ const fetchBlogById = async () => {
   }
 };
 
-// ✅ Image Upload to Supabase Storage
-const handleImageUpload = (event: Event) => {
-  const uploadedFile = (event.target as HTMLInputElement).files?.[0];
-  if (!uploadedFile) return;
-  file.value = uploadedFile;
+// ✅ Select Image (But Don't Upload Yet)
+const handleImageSelection = (event: Event) => {
+  const selectedFile = (event.target as HTMLInputElement).files?.[0];
+  if (!selectedFile) return;
+
+  file.value = selectedFile; // ✅ Store file but don't upload yet
+
+  // ✅ Show preview
+  selectedItem.value.image = URL.createObjectURL(selectedFile);
 };
 
-// ✅ Upload Image to Supabase Storage
-const uploadImage = async () => {
-  if (!file.value) {
-    alert("Please select an image.");
-    return;
-  }
+// ✅ Upload Image When Saving Blog
+const uploadImageToSupabase = async () => {
+  if (!file.value) return null; // If no new image, return null
 
-  loadingImage.value = true;
   const filePath = `blog-images/${file.value.name}`;
 
   try {
@@ -196,21 +187,15 @@ const uploadImage = async () => {
 
     if (error) throw error;
 
-    // ✅ Get Public URL
-    selectedItem.value.image = $supabase.storage
-      .from("blogs")
-      .getPublicUrl(filePath).publicUrl;
-
-    alert("Image uploaded successfully!");
+    return $supabase.storage.from("blogs").getPublicUrl(filePath).publicUrl;
   } catch (error) {
     console.error("❌ Image Upload Error:", error);
     alert("Failed to upload image.");
-  } finally {
-    loadingImage.value = false;
+    return null;
   }
 };
 
-// ✅ Save Blog (Update or Add)
+// ✅ Save Blog (Upload Image First)
 const handleSaveBlog = async () => {
   if (!selectedItem.value.title.trim()) {
     alert("Please enter the title.");
@@ -220,34 +205,36 @@ const handleSaveBlog = async () => {
     alert("Please enter the description.");
     return;
   }
-  if (!selectedItem.value.image) {
-    alert("Please upload an image.");
-    return;
-  }
 
   loadingButton.value = true;
 
   try {
+    if (file.value) {
+      const uploadedImageUrl = await uploadImageToSupabase();
+      if (uploadedImageUrl) {
+        selectedItem.value.image = uploadedImageUrl;
+      }
+    }
+
     if (isEditMode.value) {
-      // Update existing blog
+      // ✅ Update blog
       const { error } = await $supabase
         .from("blogs")
         .update({
           title: selectedItem.value.title,
-          date: selectedItem.value.date,
           description: selectedItem.value.description,
           image: selectedItem.value.image,
+          updated_at: new Date().toISOString(), // ✅ Update timestamp
         })
         .eq("id", id);
 
       if (error) throw error;
       alert("Blog updated successfully!");
     } else {
-      // Insert new blog
+      // ✅ Insert new blog
       const { error } = await $supabase.from("blogs").insert([
         {
           title: selectedItem.value.title,
-          date: selectedItem.value.date,
           description: selectedItem.value.description,
           image: selectedItem.value.image,
         },
@@ -271,6 +258,7 @@ onMounted(() => {
   fetchBlogById();
 });
 </script>
+
 <style scoped>
 .upload-container {
   text-align: center;
